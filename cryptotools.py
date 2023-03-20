@@ -48,8 +48,10 @@ def aes_exp(data, key_size, mode):
     decryption_speed = len(data) / decryption_time
     print(f"\nAES with key size: {key_size}-bit, mode : {mode} and file size: {len(data)}")
     print(f"\tKey generation time: {key_generation_time:.9f} s")
-    print(f"\tEncryption time: {encryption_time:.9f} s ({encryption_speed} bytes/s)")
-    print(f"\tDecryption time: {decryption_time:.9f} s ({decryption_speed} bytes/s)")
+    print(f"\tEncryption time: {encryption_time:.9f} s")
+    print(f"\tEncryption speed: {encryption_speed:.9f} bytes/s")
+    print(f"\tDecryption time: {decryption_time:.9f} s")
+    print(f"\tDecryption speed: {decryption_speed:.9f} bytes/s")
 
 # Perform the experiments for AES (a)-(c).
 print("\n\nRunning AES Experiments\n")
