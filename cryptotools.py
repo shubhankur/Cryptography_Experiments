@@ -5,24 +5,21 @@ from cryptography.hazmat.primitives.asymmetric import dsa, rsa, padding
 import os
 import time
 
-# Constants
-SMALL_FILE_SIZE = 1024  # 1 KB
-LARGE_FILE_SIZE = SMALL_FILE_SIZE * SMALL_FILE_SIZE * 10  # 10 MB
-
-# Generate random data for the files
-small_data = os.urandom(SMALL_FILE_SIZE)
-large_data = os.urandom(LARGE_FILE_SIZE)
+with open("small_file.txt", "wb") as f:
+    f.write(os.urandom(1024))
+with open("large_file.txt", "wb") as f:
+    f.write(os.urandom(1024 * 1024 * 10))
 
 # Generate a new AES key
 def key_generation_aes(key_size):
-    start_time = time.time()
+    start_time = time.monotonic()
     key = os.urandom(key_size//8) #converting bits to bytes
-    key_generation_time = time.time() - start_time
+    key_generation_time = time.monotonic() - start_time
     return key, key_generation_time
 
 # AES CBC encryption and decryption
 def aes(key, data, mode):
-    start_time = time.time()
+    start_time = time.monotonic()
     iv = os.urandom(16)
     if(mode == "CBC"):
         pass_mode = modes.CBC(iv)
@@ -31,22 +28,23 @@ def aes(key, data, mode):
     cipher = Cipher(algorithms.AES(key), pass_mode, backend=default_backend())    
     encryptor = cipher.encryptor()
     encrypted_data = encryptor.update(data) + encryptor.finalize()
-    encryption_time = time.time()-start_time
+    encryption_time = time.monotonic()-start_time
+    start_time = time.monotonic()
     decryptor = cipher.decryptor()
     decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
-    decryption_time = time.time()-encryption_time
+    decryption_time = time.monotonic()-start_time
     assert decrypted_data == data  # Check correctness of decryption
     return encryption_time, decryption_time
 
 # Perform encryption and decryption
-def aes_exp(data, key_size, mode):
+def aes_exp(data, key_size, mode, length):
     key, key_generation_time = key_generation_aes(key_size)
     # measure the time it takes
     encryption_time, decryption_time = aes(key, data, mode)
     # Check the encryption and decryption speeds
-    encryption_speed =  len(data)/ encryption_time
-    decryption_speed = len(data) / decryption_time
-    print(f"\nAES with key size: {key_size}-bit, mode : {mode} and file size: {len(data)}")
+    encryption_speed =  length/ encryption_time
+    decryption_speed = length / decryption_time
+    print(f"\nAES with key size: {key_size}-bit, mode : {mode} and file size: {length}")
     print(f"\tKey generation time: {key_generation_time:.9f} s")
     print(f"\tEncryption time: {encryption_time:.9f} s")
     print(f"\tEncryption speed: {encryption_speed:.9f} bytes/s")
@@ -55,12 +53,18 @@ def aes_exp(data, key_size, mode):
 
 # Perform the experiments for AES (a)-(c).
 print("\n\nRunning AES Experiments\n")
-aes_exp(small_data, 128, "CBC") #128 bit key, AES, CBS Mode, small file
-aes_exp(large_data, 128, "CBC") #128 bit key, AES, CBS Mode, large file
-aes_exp(small_data, 128, "CTR") #128 bit key, AES, CTR Mode, small file
-aes_exp(large_data, 128, "CTR") #128 bit key, AES, CTR Mode, large file
-aes_exp(small_data, 256, "CTR") #128 bit key, AES, CTR Mode, small file
-aes_exp(large_data, 256, "CTR") #256 bit key, AES, CTR Mode, large file
+with open("small_file.txt", "rb") as f:
+    small_data = f.read()
+with open("large_file.txt", "rb") as f:
+    large_data = f.read()
+length_small = os.path.getsize("small_file.txt")
+length_large = os.path.getsize("large_file.txt")
+aes_exp(small_data, 128, "CBC", length_small) #128 bit key, AES, CBS Mode, small file
+aes_exp(large_data, 128, "CBC", length_large) #128 bit key, AES, CBS Mode, large file
+aes_exp(small_data, 128, "CTR", length_small) #128 bit key, AES, CTR Mode, small file
+aes_exp(large_data, 128, "CTR", length_large) #128 bit key, AES, CTR Mode, large file
+aes_exp(small_data, 256, "CTR", length_small) #128 bit key, AES, CTR Mode, small file
+aes_exp(large_data, 256, "CTR", length_large) #256 bit key, AES, CTR Mode, large file
 
 
 #Implementing RSA
@@ -134,20 +138,20 @@ def hash_exp(hash_algorithm):
     hash_name = hash_algorithm.name
     hash_func = hashes.Hash(hash_algorithm, backend=default_backend())
 
-    start_time = time.time()
+    start_time = time.monotonic()
     with open('small_file.txt', 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hash_func.update(chunk)
     small_file_hash = hash_func.finalize()
-    small_file_time = time.time()-start_time
+    small_file_time = time.monotonic()-start_time
 
     hash_func = hashes.Hash(hash_algorithm, backend=default_backend())
-    start_time = time.time()
+    start_time = time.monotonic()
     with open('large_file.txt', 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hash_func.update(chunk)
     large_file_hash = hash_func.finalize()
-    large_file_time = time.time() - start_time
+    large_file_time = time.monotonic() - start_time
 
     total_time = small_file_time + large_file_time
     per_byte_time_small = total_time / 1024
@@ -166,9 +170,9 @@ for hash in hash_algorithms:
 
 #Implementing DSA Experiments
 def generate_key_pair(key_size):
-    start = time.time()
+    start = time.monotonic()
     private_key = dsa.generate_private_key(key_size=key_size)
-    end = time.time()
+    end = time.monotonic()
     key_gen_time = end - start
     public_key = private_key.public_key()
     return private_key, public_key, key_gen_time
@@ -177,9 +181,9 @@ def generate_key_pair(key_size):
 def sign_file(file_path, private_key):
     with open(file_path, "rb") as f:
         data = f.read()
-    start = time.time()
+    start = time.monotonic()
     signature = private_key.sign(data, hashes.SHA256())
-    end = time.time()
+    end = time.monotonic()
     sign_time = end - start
     return signature, sign_time
 
@@ -187,13 +191,13 @@ def sign_file(file_path, private_key):
 def verify_file(file_path, public_key, signature):
     with open(file_path, "rb") as f:
         data = f.read()
-    start = time.time()
+    start = time.monotonic()
     try:
         public_key.verify(signature, data, hashes.SHA256())
         valid = True
     except:
         valid = False
-    end = time.time()
+    end = time.monotonic()
     verify_time = end - start
     return valid, verify_time
 
