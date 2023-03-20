@@ -155,9 +155,11 @@ def hash_exp(hash_algorithm):
 
     total_time = small_file_time + large_file_time
     per_byte_time_small = total_time / 1024
-    per_byte_time_large = total_time / (1024 * 1024)
+    per_byte_time_large = total_time / (1024 * 1024 * 10)
 
     print(f'\nComputing timings for hash: ', hash_name)
+    print(f'\tHash Value for small file: ', small_file_hash)
+    print(f'\tHash Value for large file: ', large_file_hash)
     print(f'\tTotal time taken for small file: {small_file_time:.9f} s')
     print(f'\tTotal time taken for large file: {large_file_time:.9f} s')
     print(f'\tTotal time taken for both the files: {total_time:.9f} s')
