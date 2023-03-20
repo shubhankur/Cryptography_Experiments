@@ -47,9 +47,9 @@ def aes_exp(data, key_size, mode):
     encryption_speed =  len(data)/ encryption_time
     decryption_speed = len(data) / decryption_time
     print(f"\nAES with key size: {key_size}-bit, mode : {mode} and file size: {len(data)}")
-    print(f"\tKey generation time: {key_generation_time} s")
-    print(f"\tEncryption time: {encryption_time} s ({encryption_speed} bytes/s)")
-    print(f"\tDecryption time: {decryption_time} s ({decryption_speed} bytes/s)")
+    print(f"\tKey generation time: {key_generation_time:.9f} s")
+    print(f"\tEncryption time: {encryption_time:.9f} s ({encryption_speed} bytes/s)")
+    print(f"\tDecryption time: {decryption_time:.9f} s ({decryption_speed} bytes/s)")
 
 # Perform the experiments for AES (a)-(c).
 print("\n\nRunning AES Experiments\n")
@@ -77,7 +77,7 @@ def key_generation_rsa(key_size):
 def rsa_exp(input_file, output_file, key_size):
     print("\n\nRSA with key size: {}-bit and File Size :{}".format(key_size, os.path.getsize((input_file))))
     private_key, public_key, key_generation_time = key_generation_rsa(key_size)
-    print(f"\tKey generation time: {key_generation_time} s")
+    print(f"\tKey generation time: {key_generation_time:.9f} s")
     encryption_time = 0
     decryption_time = 0
     with open(input_file, "rb") as f_in, open(output_file, "wb") as f_out:
@@ -96,10 +96,10 @@ def rsa_exp(input_file, output_file, key_size):
             plaintext_array += plaintext
         encryption_speed = os.path.getsize(input_file)/ encryption_time
         decryption_speed = os.path.getsize(input_file)/ decryption_time
-        print(f"\tEncryption time: {encryption_time} s")
-        print(f"\tDecryption time: {decryption_time} s")
-        print(f"\tEncryption speed per byte: {encryption_speed} s")
-        print(f"\tDecryption speed per byte: {decryption_speed} s")
+        print(f"\tEncryption time {encryption_time:.9f} s")
+        print(f"\tDecryption time: {decryption_time:.9f} s")
+        print(f"\tEncryption speed per byte: {encryption_speed:.9f} s")
+        print(f"\tDecryption speed per byte: {decryption_speed:.9f} s")
 
         f_out.write(plaintext_array)
 
@@ -152,11 +152,11 @@ def hash_exp(hash_algorithm):
     per_byte_time_large = total_time / (1024 * 1024)
 
     print(f'\nComputing timings for hash: ', hash_name)
-    print(f'\tTotal time taken for small file: {small_file_time}s')
-    print(f'\tTotal time taken for large file: {large_file_time}s')
-    print(f'\tTotal time taken for both the files: {total_time}s')
-    print(f'\tPer-byte time for small file: {per_byte_time_small}s')
-    print(f'\tPer-byte time for large file: {per_byte_time_large}s')
+    print(f'\tTotal time taken for small file: {small_file_time:.9f} s')
+    print(f'\tTotal time taken for large file: {large_file_time:.9f} s')
+    print(f'\tTotal time taken for both the files: {total_time:.9f} s')
+    print(f'\tPer-byte time for small file: {per_byte_time_small:.9f} s')
+    print(f'\tPer-byte time for large file: {per_byte_time_large:.9f} s')
 
 hash_algorithms = [hashes.SHA256(), hashes.SHA512(), hashes.SHA3_256()]
 for hash in hash_algorithms:
@@ -197,7 +197,7 @@ def verify_file(file_path, public_key, signature):
 
 
 def run_experiment(key_size):
-    print(f"\n\nCalculating times for {key_size}-bit DSA key\n")
+    print(f"\n\nCalculating timings for {key_size}-bit DSA key\n")
     small_file_name = "1KB_file.txt"
     large_file_name = "10MB_file.txt"
     small_data = os.urandom(1024)
@@ -226,15 +226,15 @@ def run_experiment(key_size):
     per_byte_verify_time_large = verify_time_large / (1024 * 1024 * 10)
 
     # print results
-    print(f"\tKey generation time for {key_size}-bit DSA key: {key_gen_time}s")
-    print(f"\tSignature time for small file using {key_size}-bit DSA key: {sign_time_small}s")
-    print(f"\tSignature time for large file using {key_size}-bit DSA key: {sign_time_large}s")
-    print(f"\tVerification time for small file using {key_size}-bit DSA key: {verify_time_small}s")
-    print(f"\tVerification time for large file using {key_size}-bit DSA key: {verify_time_large}s")
-    print(f"\tPer-byte signature time for small file using {key_size}-bit DSA key: {per_byte_sign_time_small}s")
-    print(f"\tPer-byte signature time for large file using {key_size}-bit DSA key: {per_byte_sign_time_large}s")
-    print(f"\tPer-byte verification time for small file using {key_size}-bit DSA key: {per_byte_verify_time_small}s")
-    print(f"\tPer-byte verification time for large file using {key_size}-bit DSA key: {per_byte_verify_time_large}s")
+    print(f"\tKey generation time: {key_gen_time:.9f} s")
+    print(f"\tSignature time for small file: {sign_time_small:.9f} s")
+    print(f"\tSignature time for large file: {sign_time_large:.9f} s")
+    print(f"\tVerification time for small file: {verify_time_small:.9f} s")
+    print(f"\tVerification time for large file: {verify_time_large:.9f} s")
+    print(f"\tPer-byte signature time for small file: {per_byte_sign_time_small:.9f} s")
+    print(f"\tPer-byte signature time for large file: {per_byte_sign_time_large:.9f} s")
+    print(f"\tPer-byte verification time for small file: {per_byte_verify_time_small:.9f} s")
+    print(f"\tPer-byte verification time for large file: {per_byte_verify_time_large:.9f} s")
 
 print("\n\nRunning DSA Experiments")
 run_experiment(2048)
