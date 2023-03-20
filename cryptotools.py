@@ -13,6 +13,7 @@ LARGE_FILE_SIZE = SMALL_FILE_SIZE * SMALL_FILE_SIZE * 10  # 10 MB
 small_data = os.urandom(SMALL_FILE_SIZE)
 large_data = os.urandom(LARGE_FILE_SIZE)
 
+# Generate a new AES key
 def key_generation_aes(key_size):
     start_time = time.time()
     key = os.urandom(key_size//8) #converting bits to bytes
@@ -37,21 +38,7 @@ def aes(key, data, mode):
     assert decrypted_data == data  # Check correctness of decryption
     return encryption_time, decryption_time
 
-# # AES CTR encryption and decryption
-# def aes_ctr(key, data):
-#     start_time = time.time()
-#     nonce = os.urandom(16)
-#     cipher = Cipher(algorithms.AES(key), modes.CTR(nonce), backend=default_backend())
-#     encryptor = cipher.encryptor()
-#     encrypted_data = encryptor.update(data) + encryptor.finalize()
-#     encryption_time = time.time()-start_time
-#     decryptor = cipher.decryptor()
-#     decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
-#     decryption_time = time.time()-encryption_time
-#     assert decrypted_data == data  # Check correctness of decryption
-#     return encryption_time, decryption_time
-
-# Generate a new AES key and perform encryption and decryption
+# Perform encryption and decryption
 def aes_exp(data, key_size, mode):
     key, key_generation_time = key_generation_aes(key_size)
     # measure the time it takes
